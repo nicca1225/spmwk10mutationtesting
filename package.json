@@ -1,0 +1,24 @@
+{
+  "name": "coverage-illusion-demo",
+  "version": "1.0.0",
+  "description": "IS212 Week 10 demo: does high line coverage on AI-generated tests mean the tests actually catch bugs? Measured with StrykerJS mutation testing.",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "mutate": "stryker run",
+    "report": "node scripts/open-report.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/jest-runner": "^10.0.0",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.15",
+    "typescript": "^6.0.3"
+  }
+}
