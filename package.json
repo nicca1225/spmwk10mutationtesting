@@ -7,7 +7,12 @@
     "test": "jest",
     "coverage": "jest --coverage",
     "mutate": "stryker run",
-    "report": "node scripts/open-report.js"
+    "report": "node scripts/open-report.js",
+    "q4:test": "jest --config q4/jest.config.js",
+    "q4:coverage": "jest --config q4/jest.config.js --coverage",
+    "q4:mutate": "stryker run q4/stryker.config.json",
+    "q4:report": "node scripts/open-report.js q4-mutation",
+    "q4:spec": "jest --config q4/jest.spec.config.js"
   },
   "engines": {
     "node": ">=22"
