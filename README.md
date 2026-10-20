@@ -49,7 +49,68 @@ git pull
 npm install
 ```
 
-## Running the main demo (presentation Q2: "Can you show it?")
+## Live demo runbook (read this if you're presenting)
+
+The live demo is three quick switches from the slides to VS Code / the browser. Every command reruns Stryker on the test files already saved in this repo, so **you get the same numbers every time** (Gemini is not called again).
+
+### Before class (do it the day before too)
+
+1. Open this folder in VS Code and open a terminal (**Terminal → New Terminal**). The prompt should end in `spmwk10mutationtesting %`. If not, `cd` there first. Keep the quotes because "IS212 SPM" has a space, and adjust the path to where *you* cloned it:
+   ```bash
+   cd "/Users/<you>/.../IS212 SPM/mutationtesting_repo/spmwk10mutationtesting"
+   ```
+2. Get the latest code and install:
+   ```bash
+   git pull
+   npm install
+   node -v        # must be 22 or higher
+   ```
+3. **Dry run every command in the cheat sheet below once.** This also creates the HTML reports that `npm run report` opens.
+4. Make the terminal readable from the back of the room: press **Cmd +** several times, then **Cmd K** to clear it.
+5. Close Slack, mute notifications, and if the repo is inside OneDrive, pause OneDrive syncing.
+6. If anything breaks on the day, **don't debug live**. Go back to the slides; they already have screenshots of the same results.
+
+### During the presentation
+
+| Slide | Run | Point at | Time |
+|---|---|---|---|
+| **5 · "All green?"** | `npm run coverage` | The coverage table: **100** in every column. "Coverage says this suite is perfect." | ~10s |
+| | `npm run mutate` | The final table: **98.44**, **63 killed**, **1 survived**. Just above it, the `[Survived]` block showing `order.subtotal < 0` → `order.subtotal <= 0`. | ~20s |
+| **6 · "The one that got away"** | `npm run report` | Opens in the browser. Click `orderPricing.ts`, then the **red dot on line 21**. Red line = original code, green line = Stryker's change. "Every test still passed with this bug in." | ~15s |
+| **9 · "Still wrong."** | `npm run q4:spec` | The red **FAIL**: 4 ✓ and 1 ✗. In the diff, **`- "shipping": 5`** (what the spec expects) vs **`+ "shipping": 0`** (what the code did), and total 78.8 vs 73.8. | ~15s |
+
+Optional if you're under time: on slide 8, run `npm run q4:mutate` to show **100.00** (64/64 killed) before revealing the failure on slide 9.
+
+Heads-up: after `npm run q4:spec` fails, npm prints a few extra `npm error` lines at the bottom. That's normal (npm reporting the failed test run). Scroll up to the red FAIL.
+
+### Expected results cheat sheet
+
+| Command | Expected result |
+|---|---|
+| `npm test` | 17 passed, 17 total |
+| `npm run coverage` | 100 / 100 / 100 / 100 (stmts, branch, funcs, lines) |
+| `npm run mutate` | Mutation score **98.44**, 63 killed, 1 survived (line 21, `< 0` → `<= 0`) |
+| `npm run report` | Opens `reports/mutation/mutation.html`; one red dot on line 21 |
+| `npm run q4:test` | 17 passed, 17 total |
+| `npm run q4:coverage` | 100 / 100 / 100 / 100 |
+| `npm run q4:mutate` | Mutation score **100.00**, 64 killed, 0 survived |
+| `npm run q4:report` | Opens `reports/q4-mutation/mutation.html`; no red dots |
+| `npm run q4:spec` | 4 passed, **1 failed** (§3 $82 with SPM10: shipping expected 5, received 0) |
+
+`npm run report` and `npm run q4:report` only work after their `mutate` command has run at least once.
+
+### If something goes wrong
+
+| Problem | Fix |
+|---|---|
+| `command not found: npm`, or `node -v` below 22 | Install Node 22+ from nodejs.org (or `brew upgrade node`) |
+| `Cannot find module ...` | Run `npm install` |
+| Stryker is very slow or throws odd file errors | Pause OneDrive syncing and run it again |
+| `npm run report` doesn't open anything | Open `reports/mutation/mutation.html` in your browser manually |
+| Numbers differ from the cheat sheet | Someone edited a file. Run `git status`; if `tests/`, `q4/` or `src/` show as modified, run `git restore tests q4 src` to go back to the committed versions |
+| Anything else | Skip the live run and present from the slides |
+
+## Reference: main demo commands (presentation Q2: "Can you show it?")
 
 ```bash
 npm test          # 17 tests, all green
@@ -62,7 +123,7 @@ npm run report    # opens the HTML report in your browser
 
 **In the HTML report:** click `orderPricing.ts`. Green dots are killed mutants, the red dot on line 21 is the survivor. Click it to see the mutation.
 
-## Running the Q4 demo (presentation Q4: "Where does it break?")
+## Reference: Q4 demo commands (presentation Q4: "Where does it break?")
 
 ```bash
 npm run q4:test       # Gemini's tests on the buggy code: 17 / 17 green
@@ -92,8 +153,3 @@ Don't rerun the AI until you get a "better" or "worse" score: report what actual
 - **Gemini saw only the code**, the way most developers prompt. Giving it the spec might change the Q4 result; that would be a separate experiment.
 - **Mutation testing is slow on big codebases** (every mutant reruns tests). Stryker's `--incremental` mode helps by only retesting changed code.
 - **Some real-world mutants can't be killed** (equivalent mutants), which drags scores down. This module has none.
-
-## Tips for recording
-
-- Run everything once beforehand so `npm install` is done and the reports exist.
-
